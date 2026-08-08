@@ -15,10 +15,12 @@ export default function PrivacyScreen() {
   const bytes = new Blob([JSON.stringify(txs)]).size;
   const kb = (bytes / 1024).toFixed(1);
 
-  const handleWipe = () => {
+  const handleWipe = async () => {
     if (!window.confirm('⚠️ This will permanently delete all data. Are you sure?')) return;
     setWiping(true);
-    setTimeout(() => { wipe(); setWiping(false); setWiped(true); }, 700);
+    await wipe();
+    setWiping(false);
+    setWiped(true);
   };
 
   const handleExport = () => {

@@ -17,13 +17,16 @@ export default function AlertsScreen() {
   const triggered = CAT_NAMES.filter(c => stats[c].alertTriggered);
   const mainCat = triggered[0] || null;
 
-  const simulate = () => {
+  const simulate = async () => {
     setSimming(true);
     const amt = 420 + Math.floor(Math.random() * 220);
     const merchant = FOOD_MERCHANTS[Math.floor(Math.random() * FOOD_MERCHANTS.length)];
     const tx = { id: Math.random().toString(36).slice(2), merchant, cat: 'Food', amt, date: '2026-08-07', daysAgo: 0 };
-    addTransaction(tx);
-    const newTxs = [...txs, tx];
+    
+    const savedTx = await addTransaction(tx);
+    const resolvedTx = savedTx || tx;
+    
+    const newTxs = [...txs.filter(t => t.id !== resolvedTx.id), resolvedTx];
     const s = computeStats('Food', newTxs);
     setSimLog(`✓ Added ₹${amt} at ${merchant} · Food: ₹${s.spent.toLocaleString('en-IN')} (${Math.round(s.pct * 100)}%) · EWMA ₹${Math.round(s.ewma)}/day · Threshold ₹${Math.round(s.threshold)}/day`);
     showToast(
